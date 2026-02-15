@@ -1,6 +1,12 @@
 # WebMCP Sidebar Agent
 
+[中文 README](./README.zh-CN.md)
+
 Open-source Chrome Extension (Manifest V3) that provides a sidebar chat UI to discover and call page WebMCP functions.
+
+## Browser Requirement
+
+As of **February 15, 2026**, this project should be run in **Chrome Canary** for WebMCP-related APIs and behavior used by this extension.
 
 ## What It Does
 

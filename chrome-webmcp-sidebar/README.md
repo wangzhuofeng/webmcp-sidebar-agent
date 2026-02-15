@@ -1,6 +1,12 @@
 # WebMCP Sidebar Agent (Chrome Extension)
 
+[中文说明](./README.zh-CN.md)
+
 A Chrome Sidebar extension for discovering and invoking WebMCP functions on the current page via LLM tool-calling.
+
+## Browser Requirement
+
+As of **February 15, 2026**, run this extension in **Chrome Canary** for WebMCP-related APIs used by this project.
 
 ## Features
 
