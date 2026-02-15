@@ -94,11 +94,13 @@ h2 {
 }
 
 .provider-promo a {
-  color: var(--muted);
+  color: var(--primary);
   text-decoration: none;
+  transition: color 120ms ease, text-decoration-color 120ms ease;
 }
 
 .provider-promo a:hover {
+  color: var(--primary-strong);
   text-decoration: underline;
 }
 
