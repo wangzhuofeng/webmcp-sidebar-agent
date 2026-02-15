@@ -1,0 +1,282 @@
+:root {
+  --bg: #f7f8fb;
+  --panel: #ffffff;
+  --text: #1a1f2a;
+  --muted: #5d6678;
+  --line: #d9deea;
+  --primary: #0f62fe;
+  --primary-strong: #0043ce;
+  --danger: #b3261e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 12px;
+  color: var(--text);
+  background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 30%, var(--bg) 100%);
+  font: 13px/1.4 "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.lang-toggle {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 38px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.card-header h2 {
+  margin: 0;
+}
+
+.header-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.meta-hint {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 190px;
+}
+
+.provider-promo {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.provider-promo a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.provider-promo a:hover {
+  text-decoration: underline;
+}
+
+.chevron {
+  display: inline-block;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.card-body {
+  margin-top: 8px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+
+input,
+select,
+textarea,
+button {
+  width: 100%;
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  margin-top: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 8px;
+  background: #fff;
+  color: var(--text);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 64px;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  padding: 8px;
+  transition: background 120ms ease;
+}
+
+button:hover {
+  background: var(--primary-strong);
+}
+
+.card-header:hover {
+  background: transparent;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.row.compact {
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.row > * {
+  flex: 1;
+}
+
+.status {
+  margin: 0;
+  min-height: 18px;
+  color: var(--muted);
+}
+
+.status.error {
+  color: var(--danger);
+}
+
+.chat-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.chat-header h2 {
+  margin: 0;
+}
+
+.chat-status {
+  min-height: 0;
+  margin: 0;
+  font-size: 11px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.function-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.function-item {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 6px;
+}
+
+.function-item .name {
+  font-weight: 600;
+}
+
+.function-item .desc {
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.debug-output {
+  margin: 8px 0 0;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  max-height: 160px;
+  overflow: auto;
+  background: #fafbfe;
+  color: #364056;
+  white-space: pre-wrap;
+}
+
+.chat-card {
+  min-height: 0;
+}
+
+.chat-log {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px;
+  height: 220px;
+  overflow: auto;
+  margin-bottom: 8px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.msg {
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.msg.user {
+  background: #e7f0ff;
+}
+
+.msg.assistant {
+  background: #f3f4f8;
+}
+
+.msg.system {
+  background: #edf7ed;
+}

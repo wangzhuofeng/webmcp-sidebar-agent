@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebMCP Sidebar Agent</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <header>
+      <h1 id="appTitle">WebMCP Agent</h1>
+      <button id="langToggle" class="lang-toggle" type="button">EN</button>
+    </header>
+
+    <section class="card collapsible open" id="configCard">
+      <button class="card-header" id="configToggle" type="button" aria-expanded="true">
+        <div class="header-title">
+          <h2 id="configTitle">模型配置</h2>
+          <span id="configVerified" class="meta-hint"></span>
+        </div>
+        <span class="chevron">▾</span>
+      </button>
+      <div class="card-body" id="configBody">
+        <label id="providerLabel">
+          <span id="providerLabelText">服务商</span>
+          <select id="provider">
+            <option value="siliconflow">硅基流动</option>
+          </select>
+          <div id="providerPromo" class="provider-promo hidden">
+            <a
+              id="providerPromoLink"
+              href="https://cloud.siliconflow.cn/i/17zVdpy3"
+              target="_blank"
+              rel="noopener noreferrer"
+            ></a>
+          </div>
+        </label>
+        <label id="apiKeyLabel">
+          <span id="apiKeyLabelText">API Key</span>
+          <input id="apiKey" type="password" placeholder="sk-..." />
+        </label>
+        <div class="row">
+          <button id="saveSettings" type="button">保存</button>
+          <button id="testApi" type="button">测试 API</button>
+        </div>
+        <label id="modelLabel">
+          <span id="modelLabelText">模型</span>
+          <div class="row">
+            <select id="modelSelect"></select>
+            <button id="loadModels" type="button">拉取模型</button>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <section class="card collapsible" id="debugCard">
+      <button class="card-header" id="debugToggle" type="button" aria-expanded="false">
+        <h2 id="debugTitle">功能调试</h2>
+        <span class="chevron">▸</span>
+      </button>
+      <div class="card-body hidden" id="debugBody">
+        <ul id="functionList" class="function-list"></ul>
+        <div class="row compact">
+          <button id="refreshFunctions" type="button">刷新 Functions</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card chat-card">
+      <div class="chat-header">
+        <h2 id="chatTitle">对话</h2>
+        <span id="status" class="status chat-status"></span>
+      </div>
+      <div id="chatLog" class="chat-log hidden"></div>
+      <textarea id="prompt" rows="3" placeholder="例如：帮我在这个页面里查找标题并点击登录按钮"></textarea>
+      <div class="row">
+        <button id="sendPrompt" type="button">发送</button>
+        <button id="clearChat" type="button">清空</button>
+      </div>
+    </section>
+
+    <script src="sidepanel.js" type="module"></script>
+  </body>
+</html>
