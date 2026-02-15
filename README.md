@@ -29,8 +29,7 @@ As of **February 15, 2026**, this project should be run in **Chrome Canary** for
 1. Open `chrome://extensions`
 2. Enable **Developer mode**
 3. Click **Load unpacked**
-4. Select:
-   `/Users/mark/文稿 - Local/编程 Programming/webmcp-agent/chrome-webmcp-sidebar`
+4. Select the `chrome-webmcp-sidebar` folder in this project
 
 ## Publish to GitHub
 

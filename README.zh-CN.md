@@ -29,8 +29,7 @@
 1. 打开 `chrome://extensions`
 2. 开启 **开发者模式**
 3. 点击 **加载已解压的扩展程序**
-4. 选择目录：
-   `/Users/mark/文稿 - Local/编程 Programming/webmcp-agent/chrome-webmcp-sidebar`
+4. 选择当前项目中的 `chrome-webmcp-sidebar` 目录
 
 ## 发布到 GitHub
 
