@@ -12,7 +12,7 @@
 
 - 发现当前标签页的 WebMCP functions
 - 多轮 tool-calling 对话调用
-- 支持 SiliconFlow（用户自填 API Key）
+- 内置 SiliconFlow + 支持添加 OpenAI 兼容自定义服务商
 - 支持中英切换（`EN` / `中`）
 - 支持卡片折叠布局
 - 对话状态区可显示 token 用量（若模型返回 usage）

@@ -11,7 +11,7 @@ As of **February 15, 2026**, this project should be run in **Chrome Canary** for
 ## What It Does
 
 - Displays available WebMCP functions from the current tab
-- Connects to LLM provider APIs (currently SiliconFlow)
+- Connects to LLM provider APIs (built-in SiliconFlow + user-defined OpenAI-compatible providers)
 - Runs multi-turn tool-calling chat against page functions
 - Supports Chinese/English UI switch (`EN` / `中`)
 - Supports collapsible sidebar sections and compact chat status display

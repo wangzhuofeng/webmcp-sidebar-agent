@@ -11,7 +11,7 @@
 ## 功能
 
 - 展示当前标签页可用的 WebMCP functions
-- 连接大模型服务商 API（当前支持 SiliconFlow）
+- 连接大模型服务商 API（内置 SiliconFlow + 可自定义 OpenAI 兼容服务商）
 - 通过多轮 tool-calling 对话调用页面函数
 - 支持中英双语界面切换（`EN` / `中`）
 - 支持卡片折叠布局与紧凑状态展示

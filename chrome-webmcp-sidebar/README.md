@@ -12,7 +12,7 @@ As of **February 15, 2026**, run this extension in **Chrome Canary** for WebMCP-
 
 - WebMCP function discovery from current tab
 - Tool-calling chat loop (OpenAI-compatible API format)
-- SiliconFlow provider support (user-provided API key)
+- Built-in SiliconFlow + user-defined OpenAI-compatible providers
 - Chinese/English UI switch (`EN` / `中`)
 - Collapsible sections for clean sidebar layout
 - Chat status display with optional token usage summary

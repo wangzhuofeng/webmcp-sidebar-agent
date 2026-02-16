@@ -1,15 +1,28 @@
-const providers = {
-  siliconflow: {
-    baseUrl: "https://api.siliconflow.cn/v1",
-    name: "硅基流动"
+const BUILTIN_PROVIDERS = [
+  {
+    id: "siliconflow",
+    nameZh: "硅基流动",
+    nameEn: "SiliconFlow",
+    baseUrl: "https://api.siliconflow.cn/v1"
   }
-};
+];
 
 const I18N = {
   zh: {
     app_title: "WebMCP Sidebar Agent",
     config_title: "模型配置",
     provider_label: "服务商",
+    provider_base_url_label: "当前服务商 Base URL",
+    custom_provider_name_label: "自定义服务商名称",
+    custom_provider_base_url_label: "OpenAI兼容 Base URL",
+    add_provider: "添加服务商",
+    provider_add_option: "+ 添加服务商",
+    add_provider_ok: "服务商已添加",
+    add_provider_need_name: "请填写服务商名称",
+    add_provider_need_url: "请填写 Base URL",
+    add_provider_bad_url: "Base URL 格式不正确（需以 http:// 或 https:// 开头）",
+    add_provider_exists: "服务商名称已存在",
+    provider_missing_base_url: "服务商 Base URL 未配置",
     provider_promo_link: "点击这里",
     provider_promo_text: "免费注册，获赠送算力",
     api_key_label: "API Key",
@@ -62,6 +75,17 @@ const I18N = {
     app_title: "WebMCP Sidebar Agent",
     config_title: "Model Config",
     provider_label: "Provider",
+    provider_base_url_label: "Current Provider Base URL",
+    custom_provider_name_label: "Custom Provider Name",
+    custom_provider_base_url_label: "OpenAI-Compatible Base URL",
+    add_provider: "Add Provider",
+    provider_add_option: "+ Add Provider",
+    add_provider_ok: "Provider added",
+    add_provider_need_name: "Please enter provider name",
+    add_provider_need_url: "Please enter Base URL",
+    add_provider_bad_url: "Invalid Base URL (must start with http:// or https://)",
+    add_provider_exists: "Provider name already exists",
+    provider_missing_base_url: "Provider base URL is missing",
     provider_promo_link: "Click here",
     provider_promo_text: "to register for free and get bonus credits",
     api_key_label: "API Key",
@@ -132,6 +156,14 @@ const els = {
   configTitle: document.getElementById("configTitle"),
   providerLabel: document.getElementById("providerLabel"),
   providerLabelText: document.getElementById("providerLabelText"),
+  providerBaseUrlLabelText: document.getElementById("providerBaseUrlLabelText"),
+  providerBaseUrl: document.getElementById("providerBaseUrl"),
+  customProviderNameLabelText: document.getElementById("customProviderNameLabelText"),
+  customProviderBaseUrlLabelText: document.getElementById("customProviderBaseUrlLabelText"),
+  customProviderPanel: document.getElementById("customProviderPanel"),
+  customProviderName: document.getElementById("customProviderName"),
+  customProviderBaseUrl: document.getElementById("customProviderBaseUrl"),
+  addProvider: document.getElementById("addProvider"),
   providerPromo: document.getElementById("providerPromo"),
   providerPromoLink: document.getElementById("providerPromoLink"),
   apiKeyLabel: document.getElementById("apiKeyLabel"),
@@ -152,6 +184,9 @@ let currentFunctions = [];
 let chatMessages = [];
 let latestUsage = null;
 let currentLang = "zh";
+let customProviders = [];
+let providerSettings = {};
+let lastProviderId = "siliconflow";
 
 function t(key, ...args) {
   const dict = I18N[currentLang] || I18N.zh;
@@ -188,15 +223,121 @@ function updateChatVisibility() {
   els.chatLog.classList.toggle("hidden", !hasMessages);
 }
 
+function normalizeBaseUrl(raw) {
+  const trimmed = String(raw || "").trim().replace(/\/+$/, "");
+  return trimmed;
+}
+
+function getAllProviders() {
+  return [...BUILTIN_PROVIDERS, ...customProviders];
+}
+
+function getProviderById(id) {
+  return getAllProviders().find((p) => p.id === id) || null;
+}
+
+function isBuiltinProviderId(id) {
+  return BUILTIN_PROVIDERS.some((p) => p.id === id);
+}
+
+function getProviderDisplayLabel(provider) {
+  if (!provider) return "";
+  if (provider.id === "siliconflow") return t("provider_name");
+  return provider.name || provider.nameZh || provider.nameEn || provider.id;
+}
+
+function renderProviderOptions() {
+  const current = els.provider.value;
+  els.provider.innerHTML = "";
+  for (const provider of getAllProviders()) {
+    const option = document.createElement("option");
+    option.value = provider.id;
+    option.textContent = getProviderDisplayLabel(provider);
+    els.provider.appendChild(option);
+  }
+  const addOption = document.createElement("option");
+  addOption.value = "__add_custom__";
+  addOption.textContent = t("provider_add_option");
+  els.provider.appendChild(addOption);
+  if (current && getProviderById(current)) {
+    els.provider.value = current;
+  } else if (BUILTIN_PROVIDERS[0]) {
+    els.provider.value = BUILTIN_PROVIDERS[0].id;
+  }
+}
+
+function getCurrentProviderSettings() {
+  const providerId = els.provider.value;
+  return providerSettings[providerId] || { apiKey: "", model: "" };
+}
+
+function applyCurrentProviderSettingsToInputs() {
+  const st = getCurrentProviderSettings();
+  els.apiKey.value = st.apiKey || "";
+  const wantedModel = st.model || "";
+  if (wantedModel) {
+    els.modelSelect.value = wantedModel;
+  }
+}
+
+function updateCurrentProviderSettingsFromInputs() {
+  const providerId = els.provider.value;
+  providerSettings[providerId] = {
+    apiKey: els.apiKey.value.trim(),
+    model: els.modelSelect.value || ""
+  };
+}
+
+function syncProviderBaseUrlInput() {
+  const provider = getProviderById(els.provider.value);
+  if (!provider) {
+    els.providerBaseUrl.value = "";
+    els.providerBaseUrl.disabled = true;
+    return;
+  }
+  els.providerBaseUrl.value = provider.baseUrl || "";
+  els.providerBaseUrl.disabled = isBuiltinProviderId(provider.id);
+}
+
+function updateProviderBaseUrlFromInput() {
+  const providerId = els.provider.value;
+  if (!providerId || providerId === "__add_custom__") return;
+  if (isBuiltinProviderId(providerId)) return;
+
+  const next = normalizeBaseUrl(els.providerBaseUrl.value || "");
+  if (!next) return;
+  if (!/^https?:\/\//i.test(next)) throw new Error(t("add_provider_bad_url"));
+  const idx = customProviders.findIndex((p) => p.id === providerId);
+  if (idx >= 0) {
+    customProviders[idx] = { ...customProviders[idx], baseUrl: next };
+  }
+}
+
+function updateProviderSettingsById(providerId, apiKey, model) {
+  if (!providerId) return;
+  providerSettings[providerId] = {
+    apiKey: String(apiKey || "").trim(),
+    model: model || ""
+  };
+}
+
 function applyLanguage() {
   document.documentElement.lang = currentLang === "zh" ? "zh-CN" : "en";
   els.appTitle.textContent = t("app_title");
   els.configTitle.textContent = t("config_title");
   els.providerLabelText.textContent = t("provider_label");
+  els.providerBaseUrlLabelText.textContent = t("provider_base_url_label");
+  els.customProviderNameLabelText.textContent = t("custom_provider_name_label");
+  els.customProviderBaseUrlLabelText.textContent = t("custom_provider_base_url_label");
+  els.customProviderName.placeholder =
+    currentLang === "zh" ? "例如：OpenAI / OpenRouter / Azure Proxy" : "e.g. OpenAI / OpenRouter / Azure Proxy";
+  els.customProviderBaseUrl.placeholder =
+    currentLang === "zh" ? "例如：https://api.openai.com/v1" : "e.g. https://api.openai.com/v1";
   els.apiKeyLabelText.textContent = t("api_key_label");
   els.modelLabelText.textContent = t("model_label");
   els.debugTitle.textContent = t("debug_title");
   els.chatTitle.textContent = t("chat_title");
+  els.addProvider.textContent = t("add_provider");
   els.saveSettings.textContent = t("save");
   els.testApi.textContent = t("test_api");
   els.loadModels.textContent = t("load_models");
@@ -205,13 +346,13 @@ function applyLanguage() {
   els.clearChat.textContent = t("clear");
   els.prompt.placeholder = t("prompt_placeholder");
   els.langToggle.textContent = currentLang === "zh" ? "EN" : "中";
-  if (els.provider.options.length) {
-    els.provider.options[0].textContent = t("provider_name");
-  }
+  renderProviderOptions();
+  syncProviderBaseUrlInput();
   if (els.providerPromoLink) {
     els.providerPromoLink.textContent = `${t("provider_promo_link")} ${t("provider_promo_text")}`;
   }
   updateProviderPromoVisibility();
+  updateCustomProviderPanelVisibility();
   if (els.modelSelect.options.length === 1 && !els.modelSelect.options[0].value) {
     els.modelSelect.options[0].textContent = t("no_models");
   }
@@ -222,6 +363,11 @@ function updateProviderPromoVisibility() {
   if (!els.providerPromo) return;
   const isSiliconFlow = els.provider.value === "siliconflow";
   els.providerPromo.classList.toggle("hidden", !isSiliconFlow);
+}
+
+function updateCustomProviderPanelVisibility() {
+  if (!els.customProviderPanel) return;
+  els.customProviderPanel.classList.toggle("hidden", els.provider.value !== "__add_custom__");
 }
 
 function summarizeToolResult(result) {
@@ -278,7 +424,7 @@ function setConfigVerifiedHint(provider, model) {
 function getProviderDisplayName(valueOrLabel) {
   const raw = String(valueOrLabel || "").trim();
   if (!raw) return "";
-  if (raw === "siliconflow") return t("provider_name");
+  if (getProviderById(raw)) return getProviderDisplayLabel(getProviderById(raw));
   if (raw.includes("硅基流动") || raw.includes("SiliconFlow")) return t("provider_name");
   return raw.replace(/\s*\(.*?\)\s*/g, "").trim();
 }
@@ -289,8 +435,45 @@ async function clearConfigVerifiedHint() {
 }
 
 async function refreshConfigVerifiedHintFromStorage() {
-  const data = await chrome.storage.local.get(["verifiedProvider", "verifiedModel", "provider"]);
-  setConfigVerifiedHint(getProviderDisplayName(data.verifiedProvider || data.provider || ""), data.verifiedModel || "");
+  const data = await chrome.storage.local.get(["verifiedProvider", "verifiedModel", "activeProvider"]);
+  setConfigVerifiedHint(getProviderDisplayName(data.verifiedProvider || data.activeProvider || ""), data.verifiedModel || "");
+}
+
+function makeCustomProviderId(name) {
+  const slug = String(name || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `custom-${slug || "provider"}-${Date.now().toString(36).slice(-6)}`;
+}
+
+async function addCustomProvider() {
+  const name = String(els.customProviderName.value || "").trim();
+  const baseUrl = normalizeBaseUrl(els.customProviderBaseUrl.value || "");
+  if (!name) throw new Error(t("add_provider_need_name"));
+  if (!baseUrl) throw new Error(t("add_provider_need_url"));
+  if (!/^https?:\/\//i.test(baseUrl)) throw new Error(t("add_provider_bad_url"));
+  if (getAllProviders().some((p) => (p.name || p.nameZh || p.nameEn || "").toLowerCase() === name.toLowerCase())) {
+    throw new Error(t("add_provider_exists"));
+  }
+
+  const provider = {
+    id: makeCustomProviderId(name),
+    name,
+    baseUrl
+  };
+  customProviders.push(provider);
+  renderProviderOptions();
+  els.provider.value = provider.id;
+  syncProviderBaseUrlInput();
+  updateCustomProviderPanelVisibility();
+  updateProviderPromoVisibility();
+  els.customProviderName.value = "";
+  els.customProviderBaseUrl.value = "";
+  applyCurrentProviderSettingsToInputs();
+  await saveSettings();
+  setStatus(t("add_provider_ok"));
 }
 
 function normalizeToolListLike(input) {
@@ -1042,11 +1225,14 @@ function toToolSpec(functions) {
 
 
 async function apiRequest(path, body, method = "POST") {
-  const provider = providers[els.provider.value];
+  const provider = getProviderById(els.provider.value);
   const apiKey = els.apiKey.value.trim();
+  if (!provider?.baseUrl) throw new Error(t("provider_missing_base_url"));
   if (!apiKey) throw new Error(t("ask_api_key"));
+  const base = normalizeBaseUrl(provider.baseUrl);
+  const finalPath = path.startsWith("/") ? path : `/${path}`;
 
-  const response = await fetch(`${provider.baseUrl}${path}`, {
+  const response = await fetch(`${base}${finalPath}`, {
     method,
     headers: {
       "Content-Type": "application/json",
@@ -1080,6 +1266,11 @@ async function loadModels() {
     option.value = "";
     option.textContent = t("no_models");
     els.modelSelect.appendChild(option);
+  }
+
+  const wantedModel = getCurrentProviderSettings().model;
+  if (wantedModel && models.some((m) => m?.id === wantedModel)) {
+    els.modelSelect.value = wantedModel;
   }
 }
 
@@ -1172,34 +1363,45 @@ async function runAgent(userText) {
 }
 
 async function saveSettings() {
-  const payload = {
-    provider: els.provider.value,
-    apiKey: els.apiKey.value.trim(),
-    model: els.modelSelect.value
-  };
-  await chrome.storage.local.set(payload);
+  updateProviderBaseUrlFromInput();
+  updateCurrentProviderSettingsFromInputs();
+  await chrome.storage.local.set({
+    activeProvider: els.provider.value,
+    providerSettings,
+    customProviders
+  });
 }
 
 async function loadSettings() {
   const data = await chrome.storage.local.get([
-    "provider",
-    "apiKey",
-    "model",
+    "activeProvider",
+    "providerSettings",
+    "customProviders",
     "verifiedProvider",
     "verifiedModel",
     "uiLang"
   ]);
+  customProviders = Array.isArray(data.customProviders)
+    ? data.customProviders
+        .filter((p) => p && p.id && p.name && p.baseUrl)
+        .map((p) => ({ ...p, baseUrl: normalizeBaseUrl(p.baseUrl) }))
+    : [];
+  providerSettings = data.providerSettings && typeof data.providerSettings === "object" ? data.providerSettings : {};
   currentLang = data.uiLang === "en" ? "en" : "zh";
   applyLanguage();
-  if (data.provider) els.provider.value = data.provider;
-  if (data.apiKey) els.apiKey.value = data.apiKey;
+  if (data.activeProvider && getProviderById(data.activeProvider)) {
+    els.provider.value = data.activeProvider;
+  }
+  lastProviderId = els.provider.value || BUILTIN_PROVIDERS[0].id;
+  syncProviderBaseUrlInput();
+  applyCurrentProviderSettingsToInputs();
 
   await loadModels().catch(() => {
     setStatus(t("status_boot_models_failed"), true);
   });
 
-  if (data.model) els.modelSelect.value = data.model;
-  setConfigVerifiedHint(getProviderDisplayName(data.verifiedProvider || data.provider || ""), data.verifiedModel || "");
+  applyCurrentProviderSettingsToInputs();
+  setConfigVerifiedHint(getProviderDisplayName(data.verifiedProvider || data.activeProvider || ""), data.verifiedModel || "");
 }
 
 els.saveSettings.addEventListener("click", async () => {
@@ -1279,17 +1481,45 @@ els.clearChat.addEventListener("click", () => {
   setStatus(t("status_chat_cleared"));
 });
 
-els.provider.addEventListener("change", () => {
-  clearConfigVerifiedHint().catch(() => {});
+els.provider.addEventListener("change", async () => {
+  if (els.provider.value === "__add_custom__") {
+    syncProviderBaseUrlInput();
+    updateCustomProviderPanelVisibility();
+    updateProviderPromoVisibility();
+    return;
+  }
+
+  updateProviderSettingsById(lastProviderId, els.apiKey.value, els.modelSelect.value);
+  lastProviderId = els.provider.value;
+  syncProviderBaseUrlInput();
+  applyCurrentProviderSettingsToInputs();
+  updateCustomProviderPanelVisibility();
   updateProviderPromoVisibility();
+  clearConfigVerifiedHint().catch(() => {});
+  await saveSettings();
+  await loadModels().catch(() => {});
+  applyCurrentProviderSettingsToInputs();
 });
 
 els.modelSelect.addEventListener("change", () => {
+  updateCurrentProviderSettingsFromInputs();
   clearConfigVerifiedHint().catch(() => {});
 });
 
 els.apiKey.addEventListener("input", () => {
+  updateCurrentProviderSettingsFromInputs();
   clearConfigVerifiedHint().catch(() => {});
+});
+
+els.addProvider.addEventListener("click", async () => {
+  try {
+    await addCustomProvider();
+    lastProviderId = els.provider.value;
+    await loadModels().catch(() => {});
+    applyCurrentProviderSettingsToInputs();
+  } catch (err) {
+    setStatus(String(err.message || err), true);
+  }
 });
 
 els.langToggle.addEventListener("click", async () => {
@@ -1323,6 +1553,7 @@ chrome.tabs.onUpdated.addListener((_tabId, info) => {
   setCollapsible(els.configCard, els.configToggle, els.configBody, true);
   setCollapsible(els.debugCard, els.debugToggle, els.debugBody, false);
   await loadSettings();
+  updateCustomProviderPanelVisibility();
   updateChatVisibility();
   await getFunctionsFromPage().catch(() => {
     renderFunctions([]);

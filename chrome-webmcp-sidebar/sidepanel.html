@@ -35,6 +35,23 @@
             ></a>
           </div>
         </label>
+        <label id="providerBaseUrlLabel">
+          <span id="providerBaseUrlLabelText">当前服务商 Base URL</span>
+          <input id="providerBaseUrl" type="text" placeholder="https://api.example.com/v1" />
+        </label>
+        <div id="customProviderPanel" class="hidden">
+          <label id="customProviderNameLabel">
+            <span id="customProviderNameLabelText">自定义服务商名称</span>
+            <input id="customProviderName" type="text" placeholder="例如：OpenAI / OpenRouter / Azure Proxy" />
+          </label>
+          <label id="customProviderBaseUrlLabel">
+            <span id="customProviderBaseUrlLabelText">OpenAI兼容 Base URL</span>
+            <input id="customProviderBaseUrl" type="text" placeholder="例如：https://api.openai.com/v1" />
+          </label>
+          <div class="row">
+            <button id="addProvider" type="button">添加服务商</button>
+          </div>
+        </div>
         <label id="apiKeyLabel">
           <span id="apiKeyLabelText">API Key</span>
           <input id="apiKey" type="password" placeholder="sk-..." />
