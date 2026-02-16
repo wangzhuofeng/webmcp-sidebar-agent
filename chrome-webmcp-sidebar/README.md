@@ -12,7 +12,9 @@ As of **February 15, 2026**, run this extension in **Chrome Canary** for WebMCP-
 
 - WebMCP function discovery from current tab
 - Tool-calling chat loop (OpenAI-compatible API format)
-- Built-in SiliconFlow + user-defined OpenAI-compatible providers
+- Provider system:
+  - Built-in SiliconFlow
+  - User-defined OpenAI-compatible providers (custom name + base URL)
 - Chinese/English UI switch (`EN` / `中`)
 - Collapsible sections for clean sidebar layout
 - Chat status display with optional token usage summary
@@ -27,16 +29,19 @@ As of **February 15, 2026**, run this extension in **Chrome Canary** for WebMCP-
 ## Usage
 
 1. Open sidebar from extension icon
-2. Enter API key and load/select model
-3. Open a WebMCP-enabled page
-4. Click **Refresh Functions**
-5. Chat to call tools
+2. Choose provider (or add one in provider dropdown)
+3. Enter API key and load/select model
+4. Open a WebMCP-enabled page
+5. Click **Refresh Functions**
+6. Chat to call tools
 
-## Provider
+## Model Providers
 
-- SiliconFlow (`https://api.siliconflow.cn/v1`)
-  - `GET /models`
-  - `POST /chat/completions`
+- Built-in:
+  - SiliconFlow (`https://api.siliconflow.cn/v1`)
+- Custom:
+  - Any OpenAI-compatible base URL (for example `https://api.openai.com/v1`)
+  - Per-provider API key and model are stored independently
 
 ## Notes
 

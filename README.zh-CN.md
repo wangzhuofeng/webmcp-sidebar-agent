@@ -11,7 +11,9 @@
 ## 功能
 
 - 展示当前标签页可用的 WebMCP functions
-- 连接大模型服务商 API（内置 SiliconFlow + 可自定义 OpenAI 兼容服务商）
+- 连接大模型服务商 API
+  - 内置服务商：硅基流动
+  - 自定义服务商：用户可添加 OpenAI 兼容服务商（名称 + Base URL）
 - 通过多轮 tool-calling 对话调用页面函数
 - 支持中英双语界面切换（`EN` / `中`）
 - 支持卡片折叠布局与紧凑状态展示
@@ -30,6 +32,14 @@
 2. 开启 **开发者模式**
 3. 点击 **加载已解压的扩展程序**
 4. 选择当前项目中的 `chrome-webmcp-sidebar` 目录
+
+## 模型服务商说明
+
+- 内置服务商：
+  - 硅基流动（`https://api.siliconflow.cn/v1`）
+- 自定义服务商：
+  - 在界面中添加 OpenAI 兼容 Base URL（例如 `https://api.openai.com/v1`）
+  - 每个服务商独立保存 API Key 和已选模型
 
 ## 发布到 GitHub
 

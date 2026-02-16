@@ -11,7 +11,9 @@ As of **February 15, 2026**, this project should be run in **Chrome Canary** for
 ## What It Does
 
 - Displays available WebMCP functions from the current tab
-- Connects to LLM provider APIs (built-in SiliconFlow + user-defined OpenAI-compatible providers)
+- Connects to LLM provider APIs
+  - Built-in: SiliconFlow
+  - Custom: user-added OpenAI-compatible providers (name + base URL)
 - Runs multi-turn tool-calling chat against page functions
 - Supports Chinese/English UI switch (`EN` / `中`)
 - Supports collapsible sidebar sections and compact chat status display
@@ -30,6 +32,14 @@ As of **February 15, 2026**, this project should be run in **Chrome Canary** for
 2. Enable **Developer mode**
 3. Click **Load unpacked**
 4. Select the `chrome-webmcp-sidebar` folder in this project
+
+## Model Providers
+
+- Built-in provider:
+  - SiliconFlow (`https://api.siliconflow.cn/v1`)
+- Custom providers:
+  - Add from UI using an OpenAI-compatible base URL (for example `https://api.openai.com/v1`)
+  - Each provider keeps independent API key and selected model
 
 ## Publish to GitHub
 

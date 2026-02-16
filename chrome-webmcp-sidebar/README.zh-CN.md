@@ -12,7 +12,9 @@
 
 - 发现当前标签页的 WebMCP functions
 - 多轮 tool-calling 对话调用
-- 内置 SiliconFlow + 支持添加 OpenAI 兼容自定义服务商
+- 模型服务商系统：
+  - 内置硅基流动
+  - 支持添加 OpenAI 兼容自定义服务商（自定义名称 + Base URL）
 - 支持中英切换（`EN` / `中`）
 - 支持卡片折叠布局
 - 对话状态区可显示 token 用量（若模型返回 usage）
@@ -27,16 +29,19 @@
 ## 使用
 
 1. 点击扩展图标打开 Sidebar
-2. 填写 API Key，拉取并选择模型
-3. 打开支持 WebMCP 的页面
-4. 点击 **刷新 Functions**
-5. 在对话框输入任务
+2. 选择服务商（可在下拉中新增）
+3. 填写 API Key，拉取并选择模型
+4. 打开支持 WebMCP 的页面
+5. 点击 **刷新 Functions**
+6. 在对话框输入任务
 
-## 服务商
+## 模型服务商说明
 
-- SiliconFlow（`https://api.siliconflow.cn/v1`）
-  - `GET /models`
-  - `POST /chat/completions`
+- 内置服务商：
+  - 硅基流动（`https://api.siliconflow.cn/v1`）
+- 自定义服务商：
+  - 任意 OpenAI 兼容 Base URL（例如 `https://api.openai.com/v1`）
+  - 按服务商独立保存 API Key 和已选模型
 
 ## 说明
 
